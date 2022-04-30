@@ -7,12 +7,13 @@ contract CrowedFund{
     uint public minimumcontribution;
     uint public deadLine;
     uint public noOfContributors;
+    uint public amount;
     mapping(address=>uint) public contributors;
-    constructor(uint _time,uint _amount,uint _contributaion){
+    constructor(uint _time,uint _Raisedamount,uint _MinumumContribution){
         manager=msg.sender;
         deadLine=block.timestamp+_time;
-        RaisedAmount=_amount;
-        minimumcontribution=_contributaion;
+        RaisedAmount=_Raisedamount;
+        minimumcontribution=_MinumumContribution;
     }
     modifier isManger(){
         require(manager==msg.sender,"Sorry You are not Manager");
@@ -25,10 +26,17 @@ contract CrowedFund{
             noOfContributors++;
         }
         contributors[msg.sender]=msg.value;
-        RaisedAmount+=msg.value;
+        amount+=msg.value;
     }
-    function checkBalance() public view isManger returns(uint _balance){
+    function checkBalance() public isManger  view returns(uint _balance){
         _balance=address(this).balance;
+    }
+    function refund() public{
+        require(block.timestamp>deadLine && RaisedAmount> amount,"Sorry refund not Possible");
+        require(contributors[msg.sender]!=0,"Sorry You are not eligible");
+        address payable user=payable(msg.sender);
+        user.transfer(contributors[msg.sender]);
+        contributors[msg.sender]=0;
     }
 
 }
