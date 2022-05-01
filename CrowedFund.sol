@@ -72,5 +72,14 @@ contract CrowedFund{
        votingRequest.voters[msg.sender]==true;
        votingRequest.numOfVoters++;
     }
+    function makePayment(uint _noOfRequest) public isManger{
+        require(RaisedAmount>amount);
+        Request storage thisRequest=requests[_noOfRequest];
+        require(thisRequest.complited==false,"This account already paid");
+        require(thisRequest.numOfVoters>noOfContributors/2);
+        thisRequest.recipent.transfer(thisRequest.value);
+        thisRequest.complited=true;
+        
+    }
 
 }
