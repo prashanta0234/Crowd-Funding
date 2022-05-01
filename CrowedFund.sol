@@ -32,6 +32,11 @@ contract CrowedFund{
         require(manager==msg.sender,"Sorry You are not Manager");
         _;
     }
+    modifier isContributor(){
+        require(contributors[msg.sender]!=0,"Sorry You are not eligible");
+        _;
+
+    }
     function sendCrypto() payable public{
         require(block.timestamp<deadLine,"Time is Over");
         require(msg.value>= minimumcontribution,"Please send minimum Balance");
@@ -44,9 +49,9 @@ contract CrowedFund{
     function checkBalance() public isManger  view returns(uint _balance){
         _balance=address(this).balance;
     }
-    function refund() public{
+    function refund() public isContributor{
         require(block.timestamp>deadLine && RaisedAmount> amount,"Sorry refund not Possible");
-        require(contributors[msg.sender]!=0,"Sorry You are not eligible");
+       
         address payable user=payable(msg.sender);
         user.transfer(contributors[msg.sender]);
         contributors[msg.sender]=0;
@@ -61,8 +66,11 @@ contract CrowedFund{
         newRequest.numOfVoters=0;
 
     }
-    function vote() public{
-        
+    function vote(uint _requestId) public isContributor{
+       Request storage votingRequest= requests[_requestId];
+       require(votingRequest.voters[msg.sender]==false,"You already vated");
+       votingRequest.voters[msg.sender]==true;
+       votingRequest.numOfVoters++;
     }
 
 }
