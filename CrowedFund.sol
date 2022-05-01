@@ -69,11 +69,11 @@ contract CrowedFund{
     function vote(uint _requestId) public isContributor{
        Request storage votingRequest= requests[_requestId];
        require(votingRequest.voters[msg.sender]==false,"You already vated");
-       votingRequest.voters[msg.sender]==true;
+       votingRequest.voters[msg.sender]=true;
        votingRequest.numOfVoters++;
     }
     function makePayment(uint _noOfRequest) public isManger{
-        require(RaisedAmount>amount);
+        require(RaisedAmount<amount);
         Request storage thisRequest=requests[_noOfRequest];
         require(thisRequest.complited==false,"This account already paid");
         require(thisRequest.numOfVoters>noOfContributors/2);
